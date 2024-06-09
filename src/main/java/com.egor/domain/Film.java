@@ -3,6 +3,7 @@ package com.egor.domain;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
+import java.math.BigDecimal;
 import java.time.Year;
 
 @Entity
@@ -26,4 +27,24 @@ public class Film {
     @JoinColumn(name = "language_id")
     private Language language;
 
+    @ManyToOne
+    @JoinColumn(name = "original_language_id")
+    private Language originalLanguage;
+
+    @Column(name = "rental_duration")
+    private Byte rentalDuration;
+
+    @Column(name ="rental_rate")
+    private BigDecimal rentalRate;
+
+    private Short length;
+
+    @Column(name = "replacement_cost")
+    private BigDecimal replacementCost;
+
+    @Column(columnDefinition = "enum('G', 'PG', 'PG-13', 'R', 'NC-17')")
+    private Rating rating;
+
+    @Column(name = "special_features", columnDefinition = "set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')")
+    private String specialFeatures;
 }
