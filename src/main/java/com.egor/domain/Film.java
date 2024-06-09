@@ -37,7 +37,7 @@ public class Film {
     @Column(name = "rental_duration")
     private Byte rentalDuration;
 
-    @Column(name ="rental_rate")
+    @Column(name = "rental_rate")
     private BigDecimal rentalRate;
 
     private Short length;
@@ -57,7 +57,13 @@ public class Film {
 
     @ManyToMany
     @JoinTable(name = "film_actor",
-    joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
-    inverseJoinColumns = @JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
+            joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
     private Set<Actor> actors;
+
+    @ManyToMany
+    @JoinTable(name = "film_category",
+            joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "category_id"))
+    private Set<Category> categories;
 }
