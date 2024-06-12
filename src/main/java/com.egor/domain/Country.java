@@ -14,7 +14,7 @@ public class Country {
     private Short id;
 
     @Column(name = "country")
-    private Short title;
+    private String title;
 
     @Column(name = "last_update")
     @UpdateTimestamp
@@ -28,11 +28,11 @@ public class Country {
         this.id = id;
     }
 
-    public Short getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(Short title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
