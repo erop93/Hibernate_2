@@ -8,8 +8,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
 import javax.xml.catalog.Catalog;
+import java.time.LocalDateTime;
 import java.util.Properties;
-import java.util.Stack;
 
 public class Main {
 
@@ -80,6 +80,20 @@ public class Main {
 
         Main main = new Main();
         Customer customer = main.createCustomer();
+
+        main.customerReturnInventoryToStore();
+    }
+
+    private void customerReturnInventoryToStore() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Rental rental = rentalDAO.getAnyUnreturnedRental();
+            rental.setReturnDate(LocalDateTime.now());
+
+            rentalDAO.save(rental);
+            session.getTransaction().commit();
+        }
     }
 
     private Customer createCustomer() {
