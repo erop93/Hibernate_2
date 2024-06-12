@@ -10,7 +10,11 @@ import org.hibernate.cfg.Environment;
 import javax.xml.catalog.Catalog;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class Main {
 
@@ -85,6 +89,43 @@ public class Main {
         main.customerReturnInventoryToStore();
 
         main.customerRentInventory(customer);
+
+        main.newFilmWasMade();
+    }
+
+    private void newFilmWasMade() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Language language = languageDAO.getItems(0, 20).stream().unordered().findAny().get();
+            List<Category> categories = categoryDAO.getItems(0,5);
+            List<Actor> actors = actorDAO.getItems(0,20);
+
+            Film film = new Film();
+            film.setActors(new HashSet<>(actors));
+            film.setRating(Rating.NC17);
+            film.setSpecialFeatures(Set.of(Feature.TRAILERS, Feature.COMMENTARIES));
+            film.setLength((short) 100);
+            film.setReplacementCost(BigDecimal.TEN);
+            film.setRentalRate(BigDecimal.ZERO);
+            film.setLanguage(language);
+            film.setDescription("new horror movie");
+            film.setTitle("Scream 100");
+            film.setRentalDuration((byte) 44);
+            film.setOriginalLanguage(language);
+            film.setCategories(new HashSet<>(categories));
+            film.setYear(Year.now());
+            filmDAO.save(film);
+
+            FilmText filmText = new FilmText();
+            filmText.setFilm(film);
+            filmText.setId(film.getId());
+            filmText.setDescription("new horror movie");
+            filmText.setTitle("Scream 100");
+            filmTextDAO.save(filmText);
+
+            session.getTransaction().commit();
+        }
     }
 
     private void customerRentInventory(Customer customer) {
@@ -92,7 +133,7 @@ public class Main {
             session.beginTransaction();
 
             Film film = filmDAO.getFirstAvaliableFilmForRent();
-            Store store = storeDAO.getItems(0,1).get(0);
+            Store store = storeDAO.getItems(0, 1).get(0);
 
             Inventory inventory = new Inventory();
             inventory.setFilm(film);
