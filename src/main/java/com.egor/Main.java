@@ -8,6 +8,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
 import javax.xml.catalog.Catalog;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Properties;
 
@@ -82,6 +83,42 @@ public class Main {
         Customer customer = main.createCustomer();
 
         main.customerReturnInventoryToStore();
+
+        main.customerRentInventory(customer);
+    }
+
+    private void customerRentInventory(Customer customer) {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Film film = filmDAO.getFirstAvaliableFilmForRent();
+            Store store = storeDAO.getItems(0,1).get(0);
+
+            Inventory inventory = new Inventory();
+            inventory.setFilm(film);
+            inventory.setStore(store);
+            inventoryDAO.save(inventory);
+
+            Staff staff = store.getStaff();
+
+            Rental rental = new Rental();
+            rental.setRentalDate(LocalDateTime.now());
+            rental.setCustomer(customer);
+            rental.setInventory(inventory);
+            rental.setStaff(staff);
+            rentalDAO.save(rental);
+
+            Payment payment = new Payment();
+            payment.setRental(rental);
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setCustomer(customer);
+            payment.setAmount(BigDecimal.valueOf(55.77));
+            payment.setStaff(staff);
+            paymentDAO.save(payment);
+
+
+            session.getTransaction().commit();
+        }
     }
 
     private void customerReturnInventoryToStore() {
